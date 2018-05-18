@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>img/animal-animal-photography-cat-104827.jpg</file>
+        <file>img/cat.png</file>
+    </qresource>
+</RCC>
