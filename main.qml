@@ -1,12 +1,28 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
+import QtQuick.Dialogs 1.2
+import com.graycatworkshop.photoselector 1.0
 
 ApplicationWindow {
+    id: mainWindow
     visible: true
     width: 640
     height: 480
     title: qsTr("Scroll")
+
+
+    FileDialog {
+        id: openDirDialog
+        title: "Choose dir"
+        folder: shortcuts.home
+
+        selectFolder: true
+        onAccepted: {
+            console.log("folder is now: " + folder)
+            sidelist.model.currentDirectory = folder
+        }
+    }
 
     header: RowLayout {
         id: topRow
@@ -14,7 +30,9 @@ ApplicationWindow {
         Button {
             id: button
 
-            text: qsTr("Button")
+            text: qsTr("Open Directory")
+
+            onClicked: openDirDialog.open()
         }
     }
 
@@ -24,15 +42,39 @@ ApplicationWindow {
         anchors.bottom:  parent.bottom
         id: scrollView
 
-        width: Math.min(0.3 * parent.width, 300)
+        width: 300
 
         ListView {
+            id: sidelist
             anchors.fill: parent
-            model: 20
-            delegate: ItemDelegate {
-                text: "Item " + (index + 1)
-                width: parent.width
+            model: PhotoDirModel {
+
             }
+
+
+            delegate: ItemDelegate {
+                width: parent.width
+
+
+
+                Rectangle {
+                    width: messageText.implicitWidth + 24
+                    height: messageText.implicitHeight + 24
+                    color: "lightgrey"
+
+                    Label {
+                        id: messageText
+                        text: model.filename
+                        color: "black"
+                        anchors.fill: parent
+                        anchors.margins: 12
+                        wrapMode: Label.Wrap
+
+                    }
+                }
+            }
+
+
         }
 
     }
@@ -46,46 +88,5 @@ ApplicationWindow {
         anchors.right: parent.right
         source: "file:/home/lukaszm/qt-projects/photo-selector/img/cat.jpg"
     }
-
-
-
-    //    RowLayout {
-    //        anchors.fill: parent
-    //        id: row
-    //    }
-
-    //    GridLayout {
-    //        id: mainGrid
-    //        anchors.fill: parent
-    //        columns: 2
-
-    //        ListView {
-    //            anchors.fill: parent
-    //            model: 20
-    //            delegate: ItemDelegate {
-    //                text: "Item " + (index + 1)
-    //                width: parent.width
-    //            }
-    //        }
-
-    //        ScrollView {
-    //            id: scrollView
-    //            Layout.fillHeight: true
-    //            Layout.fillWidth: true
-    //            anchors.fill: parent
-    //        }
-
-    //        Image {
-    //            id: previewArea
-    //            width: 300
-    //            height: 400
-    //            source: "file:/home/lukaszm/qt-projects/photo-selector/img/cat.png"
-    //        }
-
-    //        Button {
-    //            id: placeholderButton
-    //            text : qsTr("Qt is shit")
-    //        }
-    //    }
-
 }
+
