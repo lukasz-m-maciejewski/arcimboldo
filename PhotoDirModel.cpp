@@ -6,10 +6,9 @@ namespace fs = std::filesystem;
 
 PhotoDirModel::PhotoDirModel(QObject *parent)
     : QAbstractListModel{parent}
-    , m_currentDirectory{"file:///home/lukaszm"}
+    , m_currentDirectory{}
     , m_directoryEntries{}
 {
-populateDirectoryEntries();
 }
 
 QString PhotoDirModel::currentDirectory() const
@@ -53,6 +52,10 @@ QVariant PhotoDirModel::data(const QModelIndex& index, int role) const
     {
         return getFilenameAt(static_cast<std::size_t>(index.row()));
     }
+    else if (role == SelectedRole)
+    {
+        return isSelected(static_cast<std::size_t>(index.row()));
+    }
     else
         return {};
 }
@@ -62,7 +65,14 @@ QHash<int, QByteArray> PhotoDirModel::roleNames() const
     QHash<int, QByteArray> names;
     names[FilepathRole] = "filepath";
     names[FilenameRole] = "filename";
+    names[SelectedRole] = "selected";
     return names;
+}
+
+bool PhotoDirModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    qDebug() << "index:" << index << " value:" << value << " role:" << role;
+    return false;
 }
 
 void PhotoDirModel::populateDirectoryEntries()
@@ -81,7 +91,7 @@ void PhotoDirModel::populateDirectoryEntries()
         qDebug() << "entry:" << entry.path().string().c_str();
         if (entry.is_regular_file() and (image_file_exts.count(entry.path().extension()) > 0))
         {
-            m_directoryEntries.push_back(entry.path());
+            m_directoryEntries.emplace_back(entry.path());
         }
     }
     qDebug() << "m_directoryEntries.size():" << m_directoryEntries.size();
@@ -89,14 +99,19 @@ void PhotoDirModel::populateDirectoryEntries()
 
 QString PhotoDirModel::getFilenameAt(std::size_t pos) const
 {
-    std::string filename = m_directoryEntries.at(pos).filename().string();
+    std::string filename = m_directoryEntries.at(pos).path.filename().string();
     qDebug() << __FUNCTION__ << filename.c_str();
     return QString::fromStdString(filename);
 }
 
 QString PhotoDirModel::getFilepathAt(std::size_t pos) const
 {
-    std::string filepath = m_directoryEntries.at(pos).string();
+    std::string filepath = m_directoryEntries.at(pos).path.string();
     qDebug() << __FUNCTION__ << filepath.c_str();
     return QString::fromStdString(filepath);
+}
+
+bool PhotoDirModel::isSelected(std::size_t pos) const
+{
+    return m_directoryEntries.at(pos).selected;
 }

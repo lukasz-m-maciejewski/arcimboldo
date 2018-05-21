@@ -47,41 +47,47 @@ ApplicationWindow {
         ListView {
             id: sidelist
             anchors.fill: parent
-            model: PhotoDirModel {
-
-            }
-
-
+            model: PhotoDirModel { }
             delegate: ItemDelegate {
                 width: parent.width
-                //text: model.filename
-
                 Rectangle {
-                    width: messageText.implicitWidth + 24
-                    height: messageText.implicitHeight + 24
-//                    color: "lightgrey"
+                    id: filelistEntry
+                    width: parent.width
+                    height: 30
 
                     Label {
-                        id: messageText
-                        text: model.filename
-//                        color: "black"
-                        anchors.fill: parent
+                        id: nameBox
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+                        height: parent.height
+                        width: 0.7 * parent.width
                         anchors.margins: 12
                         wrapMode: Label.Wrap
+                        Text {
+                            anchors.fill: parent
+                            id: entryName
+                            elide: Text.ElideRight
+                            text: model.filename
+                        }
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
                                 mainImagePreview.source = "file:" + model.filepath
                             }
                         }
-
+                    }
+                    Button {
+                        text: model.selected ? "Y" : "N"
+                        anchors.left: nameBox.right
+                        anchors.top: filelistEntry.top
+                        anchors.bottom: filelistEntry.bottom
+                        onClicked: {
+                            model.selected = !model.selected
+                        }
                     }
                 }
             }
-
-
         }
-
     }
 
     Image {
