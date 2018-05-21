@@ -54,21 +54,26 @@ ApplicationWindow {
 
             delegate: ItemDelegate {
                 width: parent.width
-
-
+                //text: model.filename
 
                 Rectangle {
                     width: messageText.implicitWidth + 24
                     height: messageText.implicitHeight + 24
-                    color: "lightgrey"
+//                    color: "lightgrey"
 
                     Label {
                         id: messageText
                         text: model.filename
-                        color: "black"
+//                        color: "black"
                         anchors.fill: parent
                         anchors.margins: 12
                         wrapMode: Label.Wrap
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                mainImagePreview.source = "file:" + model.filepath
+                            }
+                        }
 
                     }
                 }
@@ -80,7 +85,7 @@ ApplicationWindow {
     }
 
     Image {
-        id: image
+        id: mainImagePreview
         fillMode: Image.PreserveAspectFit
         anchors.top: parent.top
         anchors.bottom: parent.bottom

@@ -5,11 +5,15 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 class PhotoDirModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString currentDirectory READ currentDirectory WRITE setCurrentDirectory NOTIFY currentDirectoryChanged)
+
+    static constexpr auto FilepathRole = Qt::UserRole;
+    static constexpr auto FilenameRole = Qt::UserRole + 1;
 
 public:
     PhotoDirModel(QObject *parent = nullptr);
@@ -27,9 +31,12 @@ signals:
 private:
     void populateDirectoryEntries();
 
+    QString getFilenameAt(std::size_t) const;
+    QString getFilepathAt(std::size_t) const;
+
     QString m_currentDirectory;
 
-    std::vector<std::string> m_directoryEntries;
+    std::vector<std::filesystem::path> m_directoryEntries;
 
 };
 

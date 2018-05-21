@@ -1,15 +1,15 @@
 #include "PhotoDirModel.hpp"
 #include <QDebug>
-#include <filesystem>
+#include <set>
 
 namespace fs = std::filesystem;
 
 PhotoDirModel::PhotoDirModel(QObject *parent)
     : QAbstractListModel{parent}
-    , m_currentDirectory{}
+    , m_currentDirectory{"file:///home/lukaszm"}
     , m_directoryEntries{}
 {
-
+populateDirectoryEntries();
 }
 
 QString PhotoDirModel::currentDirectory() const
@@ -26,6 +26,9 @@ void PhotoDirModel::setCurrentDirectory(QString currentDirectory)
     m_currentDirectory = currentDirectory;
 
     populateDirectoryEntries();
+    //auto end = static_cast<int>(m_directoryEntries.size());
+    //emit dataChanged(index(0), index(end));
+    emit layoutChanged();
     emit currentDirectoryChanged();
 }
 
@@ -39,32 +42,61 @@ QVariant PhotoDirModel::data(const QModelIndex& index, int role) const
     qDebug() << "index:" << index << " role:" << role;
     if (role < Qt::UserRole)
     {
-        qDebug() << "AAAAAA";
+        qDebug() << "!!!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!11";
         return {};
     }
-    else if (role == Qt::UserRole)
-        return QString::fromStdString(m_directoryEntries.at(static_cast<std::size_t>(index.row())));
+    else if (role == FilepathRole)
+    {
+        return getFilepathAt(static_cast<std::size_t>(index.row()));
+    }
+    else if (role == FilenameRole)
+    {
+        return getFilenameAt(static_cast<std::size_t>(index.row()));
+    }
     else
         return {};
 }
 
 QHash<int, QByteArray> PhotoDirModel::roleNames() const
 {
-    qDebug() << "AAAAAA";
     QHash<int, QByteArray> names;
-    names[Qt::UserRole] = "filename";
+    names[FilepathRole] = "filepath";
+    names[FilenameRole] = "filename";
     return names;
 }
 
 void PhotoDirModel::populateDirectoryEntries()
 {
+    const std::set<fs::path> image_file_exts = {".jpeg", ".jpg"};
     m_directoryEntries.clear();
 
     qDebug() << "m_currentDirectory.toStdString():" << m_currentDirectory;
 
-    for (auto& entry : fs::directory_iterator(m_currentDirectory.toStdString().substr(7)))
+    fs::path dir = m_currentDirectory.toStdString().substr(7);
+
+    qDebug() << "path:" << dir.string().c_str();
+
+    for (auto& entry : fs::directory_iterator(dir))
     {
-        if (entry.is_regular_file())
-            m_directoryEntries.push_back(entry.path().filename());
+        qDebug() << "entry:" << entry.path().string().c_str();
+        if (entry.is_regular_file() and (image_file_exts.count(entry.path().extension()) > 0))
+        {
+            m_directoryEntries.push_back(entry.path());
+        }
     }
+    qDebug() << "m_directoryEntries.size():" << m_directoryEntries.size();
+}
+
+QString PhotoDirModel::getFilenameAt(std::size_t pos) const
+{
+    std::string filename = m_directoryEntries.at(pos).filename().string();
+    qDebug() << __FUNCTION__ << filename.c_str();
+    return QString::fromStdString(filename);
+}
+
+QString PhotoDirModel::getFilepathAt(std::size_t pos) const
+{
+    std::string filepath = m_directoryEntries.at(pos).string();
+    qDebug() << __FUNCTION__ << filepath.c_str();
+    return QString::fromStdString(filepath);
 }
