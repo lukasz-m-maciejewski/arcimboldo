@@ -34,6 +34,13 @@ ApplicationWindow {
 
             onClicked: openDirDialog.open()
         }
+
+        Button {
+            id: copySelectionButton
+            text: qsTr("Copy Selection")
+
+            onClicked: sidelist.model.emitCurrentSelection()
+        }
     }
 
     ScrollView {

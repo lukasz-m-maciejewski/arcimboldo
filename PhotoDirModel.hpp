@@ -37,6 +37,9 @@ public:
 signals:
     void currentDirectoryChanged();
 
+public slots:
+    void emitCurrentSelection();
+
 private:
     void populateDirectoryEntries();
 

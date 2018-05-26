@@ -1,5 +1,6 @@
 #include "PhotoDirModel.hpp"
 #include <QDebug>
+#include <QDir>
 #include <set>
 
 namespace fs = std::filesystem;
@@ -25,8 +26,7 @@ void PhotoDirModel::setCurrentDirectory(QString currentDirectory)
     m_currentDirectory = currentDirectory;
 
     populateDirectoryEntries();
-    //auto end = static_cast<int>(m_directoryEntries.size());
-    //emit dataChanged(index(0), index(end));
+
     emit layoutChanged();
     emit currentDirectoryChanged();
 }
@@ -39,25 +39,19 @@ int PhotoDirModel::rowCount(const QModelIndex&) const
 QVariant PhotoDirModel::data(const QModelIndex& index, int role) const
 {
     qDebug() << "index:" << index << " role:" << role;
-    if (role < Qt::UserRole)
+    switch(role)
     {
-        qDebug() << "!!!!!!!!!!!!!!!!!!ERROR!!!!!!!!!!!!!!!!!!!!!11";
-        return {};
-    }
-    else if (role == FilepathRole)
-    {
+    case FilepathRole:
         return getFilepathAt(static_cast<std::size_t>(index.row()));
-    }
-    else if (role == FilenameRole)
-    {
+    case FilenameRole:
         return getFilenameAt(static_cast<std::size_t>(index.row()));
-    }
-    else if (role == SelectedRole)
-    {
+    case SelectedRole:
         return isSelected(static_cast<std::size_t>(index.row()));
-    }
-    else
+    default:
+        qDebug() << "!!!!!!!!!!!!!!!!!! ERROR !!!!!!!!!!!!!!!!!!";
         return {};
+
+    }
 }
 
 QHash<int, QByteArray> PhotoDirModel::roleNames() const
@@ -69,10 +63,37 @@ QHash<int, QByteArray> PhotoDirModel::roleNames() const
     return names;
 }
 
-bool PhotoDirModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool PhotoDirModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     qDebug() << "index:" << index << " value:" << value << " role:" << role;
+    if (role == SelectedRole)
+    {
+        m_directoryEntries.at(static_cast<std::size_t>(index.row())).selected = value.toBool();
+        emit dataChanged(index, index);
+        return true;
+    }
     return false;
+}
+
+void PhotoDirModel::emitCurrentSelection()
+{
+    qDebug() << "ding current:" << m_currentDirectory;
+    QString current = m_currentDirectory.mid(7, m_currentDirectory.size() - 7);
+    qDebug() << "ding current:" << current;
+    QDir workdir{current};
+    auto rv = workdir.mkdir("./selection");
+    qDebug() << "mkdir returned " << rv;
+
+    for (const auto& elem : m_directoryEntries)
+    {
+        if (elem.selected)
+        {
+            QFile cf{QString::fromStdString(elem.path.string())};
+            QString newPath = QString::fromStdString(elem.path.parent_path().string()) + "/selection/" + QString::fromStdString(elem.path.filename());
+            auto cpRv = cf.copy(newPath);
+            qDebug() << "copy of " << cf.fileName() << " yelds " << cpRv;
+        }
+    }
 }
 
 void PhotoDirModel::populateDirectoryEntries()
@@ -107,7 +128,7 @@ QString PhotoDirModel::getFilenameAt(std::size_t pos) const
 QString PhotoDirModel::getFilepathAt(std::size_t pos) const
 {
     std::string filepath = m_directoryEntries.at(pos).path.string();
-    qDebug() << __FUNCTION__ << filepath.c_str();
+    qDebug() << __FUNCTION__ << ":" << __LINE__ << filepath.c_str();
     return QString::fromStdString(filepath);
 }
 

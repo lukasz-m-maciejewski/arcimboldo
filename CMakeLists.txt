@@ -11,6 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Core Quick Widgets REQUIRED)
 
 add_executable(${PROJECT_NAME} "main.cpp" "qml.qrc"
-    PhotoDirModel.cpp)
+    PhotoDirModel.cpp PhotoDirModel.hpp)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Quick Qt5::Widgets stdc++fs)
+
+#FILE(GLOB_RECURSE LibFiles "${CMAKE_SOURCE_DIR}/*.hpp")
+#add_custom_target(headers SOURCES ${LibFiles})
