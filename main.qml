@@ -9,7 +9,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Scroll")
+    title: qsTr("Arcimboldo")
 
 
     FileDialog {
@@ -44,54 +44,34 @@ ApplicationWindow {
     }
 
     ScrollView {
+        id: scrollView
+
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom:  parent.bottom
-        id: scrollView
-
         width: 300
 
         ListView {
             id: sidelist
+
             anchors.fill: parent
             model: PhotoDirModel { }
             delegate: ItemDelegate {
-                width: parent.width
-                Rectangle {
-                    id: filelistEntry
-                    width: parent.width
-                    height: 30
+                anchors.left: parent.leftMargin
+                width: parent.width * 0.8
 
-                    Label {
-                        id: nameBox
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        height: parent.height
-                        width: 0.7 * parent.width
-                        anchors.margins: 12
-                        wrapMode: Label.Wrap
-                        Text {
-                            anchors.fill: parent
-                            id: entryName
-                            elide: Text.ElideRight
-                            text: model.filename
-                        }
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                mainImagePreview.source = "file:" + model.filepath
-                            }
-                        }
+                PhotoListItem {
+                    anchors.fill: parent
+                    photo_file_name: model.filename
+                    photo_file_path: model.filepath
+                    photo_selected: model.selected
+                    onItemClicked: {
+                        mainImagePreview.source = "file:" + model.filepath
                     }
-                    Button {
-                        text: model.selected ? "Y" : "N"
-                        anchors.left: nameBox.right
-                        anchors.top: filelistEntry.top
-                        anchors.bottom: filelistEntry.bottom
-                        onClicked: {
-                            model.selected = !model.selected
-                        }
+                    onItemMarkToggle: {
+                        model.selected = !model.selected
                     }
+
                 }
             }
         }
