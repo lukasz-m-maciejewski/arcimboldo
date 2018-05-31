@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+constexpr auto DefaultLocationKey = "org.graycatworkshop.default-location";
+
 struct Entry
 {
     Entry() : fileinfo{""}, selected{false}

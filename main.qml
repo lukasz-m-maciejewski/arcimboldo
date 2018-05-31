@@ -104,7 +104,6 @@ ApplicationWindow {
         anchors.bottom: parent.bottom
         anchors.left: scrollView.right
         anchors.right: parent.right
-        source: "file:/home/lukaszm/qt-projects/photo-selector/img/cat.jpg"
     }
 }
 

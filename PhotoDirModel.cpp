@@ -3,11 +3,22 @@
 #include <QDir>
 #include <QDirIterator>
 #include <set>
+#include <QSettings>
+#include <QStandardPaths>
 
 PhotoDirModel::PhotoDirModel(QObject* parent)
     : QAbstractListModel{parent}, m_currentDirectory{}, m_directoryEntries{}
 {
-}X
+    auto picList = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+    if (picList.size() > 0)
+    {
+        m_currentDirectory = picList[0];
+        populateDirectoryEntries();
+
+        emit layoutChanged();
+        emit currentDirectoryChanged();
+    }
+}
 
 QString PhotoDirModel::currentDirectory() const
 {
@@ -73,8 +84,18 @@ void PhotoDirModel::emitCurrentSelection()
 {
     constexpr auto new_dir_rel = "/selection/";
     qDebug() << "ding current:" << m_currentDirectory;
-    QString current = m_currentDirectory.mid(7, m_currentDirectory.size() - 7);
-    qDebug() << "ding current:" << current;
+    QString current = [](QString& qs)
+    {
+        if (qs.left(5) == "file:")
+        {
+            return qs.mid(7);
+        }
+        else
+        {
+            return qs;
+        }
+    }(m_currentDirectory);
+
     QDir workdir{current};
     auto rv = workdir.mkdir("./selection");
     qDebug() << "mkdir returned " << rv;
@@ -100,7 +121,17 @@ void PhotoDirModel::populateDirectoryEntries()
 
     qDebug() << "m_currentDirectory.toStdString():" << m_currentDirectory;
 
-    auto dir = m_currentDirectory.mid(7);
+    auto dir = [](QString& qs)
+    {
+        if (qs.left(5) == "file:")
+        {
+            return qs.mid(7);
+        }
+        else
+        {
+            return qs;
+        }
+    }(m_currentDirectory);
 
     qDebug() << "path:" << dir;
 

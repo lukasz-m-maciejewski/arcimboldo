@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QSettings>
+#include <QStandardPaths>
 
 #include "PhotoDirModel.hpp"
 
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("Photo Selector");
 
     QSettings settings;
+    settings.setValue(DefaultLocationKey, QStandardPaths::standardLocations(QStandardPaths::PicturesLocation));
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
 
