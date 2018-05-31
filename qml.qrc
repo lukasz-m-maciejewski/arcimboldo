@@ -2,9 +2,9 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
-        <file>images.qrc</file>
         <file>view1.qml</file>
         <file>qmlrc/Button.qml</file>
         <file>PhotoListItem.qml</file>
+        <file>qmlrc/qmldir</file>
     </qresource>
 </RCC>

@@ -2,7 +2,7 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtQuick.Dialogs 1.2
-import com.graycatworkshop.photoselector 1.0
+import com.graycatworkshop.Arcimboldo 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -17,6 +17,7 @@ ApplicationWindow {
         title: "Choose dir"
         folder: shortcuts.home
 
+
         selectFolder: true
         onAccepted: {
             console.log("folder is now: " + folder)
@@ -28,15 +29,25 @@ ApplicationWindow {
         id: topRow
 
         Button {
-            id: button
+            id: buttonOpenDir
 
             text: qsTr("Open Directory")
 
             onClicked: openDirDialog.open()
         }
 
+        Text {
+            id: boxCurrentDirInfo
+
+            verticalAlignment: Text.AlignVCenter
+            font.pointSize: 11
+            text: "testing 123"
+
+        }
+
         Button {
-            id: copySelectionButton
+            id: buttonCopySelection
+
             text: qsTr("Copy Selection")
 
             onClicked: sidelist.model.emitCurrentSelection()
