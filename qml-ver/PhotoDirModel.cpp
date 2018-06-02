@@ -39,6 +39,20 @@ void PhotoDirModel::setCurrentDirectory(QString currentDirectory)
     emit currentDirectoryChanged();
 }
 
+QString PhotoDirModel::targetDirectory() const
+{
+    return m_targetDirectory;
+}
+
+void PhotoDirModel::setTargetDirectory(QString s)
+{
+    if (m_targetDirectory == s)
+        return;
+
+    m_targetDirectory = s;
+    emit targetDirectoryChanged();
+}
+
 int PhotoDirModel::rowCount(const QModelIndex&) const
 {
     return static_cast<int>(m_directoryEntries.size());

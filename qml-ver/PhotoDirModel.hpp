@@ -30,6 +30,7 @@ class PhotoDirModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(QString currentDirectory READ currentDirectory WRITE
                    setCurrentDirectory NOTIFY currentDirectoryChanged)
+    Q_PROPERTY(QString targetDirectory READ targetDirectory WRITE setTargetDirectory NOTIFY targetDirectoryChanged)
 
     static constexpr auto FilepathRole = Qt::UserRole;
     static constexpr auto FilenameRole = Qt::UserRole + 1;
@@ -40,6 +41,8 @@ public:
 
     QString currentDirectory() const;
     void setCurrentDirectory(QString);
+    QString targetDirectory() const;
+    void setTargetDirectory(QString);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role) const override;
@@ -49,6 +52,7 @@ public:
 
 signals:
     void currentDirectoryChanged();
+    void targetDirectoryChanged();
 
 public slots:
     void emitCurrentSelection();
@@ -61,6 +65,7 @@ private:
     bool isSelected(size_type) const;
 
     QString m_currentDirectory;
+    QString m_targetDirectory;
 
     QVector<Entry> m_directoryEntries;
 };
