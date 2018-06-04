@@ -10,8 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Core Quick Widgets REQUIRED)
 
-add_executable(${PROJECT_NAME} "main.cpp" "qml.qrc"
-    PhotoDirModel.cpp PhotoDirModel.hpp)
+list(APPEND ARCIMBOLDO_SOURCES
+    src/PhotoDirModel.cpp
+    src/main.cpp)
+
+list(APPEND ARCIMBOLDO_HEADERS
+    src/PhotoDirModel.hpp
+    )
+
+add_executable(${PROJECT_NAME}
+    ${ARCIMBOLDO_SOURCES}
+    "qml.qrc"
+    ${ARCIMBOLDO_HEADERS}
+    )
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Quick Qt5::Widgets)
 
