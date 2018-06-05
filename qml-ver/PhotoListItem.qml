@@ -11,8 +11,8 @@ Rectangle {
     signal itemMarkToggle()
     signal itemClicked()
 
-    width: 200
-    height: 30
+//    width: 200
+//    height: 30
 
     Label {
         id: nameBox

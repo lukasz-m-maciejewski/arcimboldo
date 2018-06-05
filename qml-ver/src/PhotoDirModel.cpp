@@ -27,7 +27,6 @@ QString PhotoDirModel::currentDirectory() const
 
 void PhotoDirModel::setCurrentDirectory(QString currentDirectory)
 {
-    qDebug("aaa");
     if (m_currentDirectory == currentDirectory)
         return;
 
@@ -60,7 +59,7 @@ int PhotoDirModel::rowCount(const QModelIndex&) const
 
 QVariant PhotoDirModel::data(const QModelIndex& index, int role) const
 {
-    qDebug() << "index:" << index << " role:" << role;
+    //qDebug() << "index:" << index << " role:" << role;
     switch (role)
     {
     case FilepathRole: return getFilepathAt(index.row());
@@ -84,7 +83,7 @@ QHash<int, QByteArray> PhotoDirModel::roleNames() const
 bool PhotoDirModel::setData(const QModelIndex& index, const QVariant& value,
                             int role)
 {
-    qDebug() << "index:" << index << " value:" << value << " role:" << role;
+    //qDebug() << "index:" << index << " value:" << value << " role:" << role;
     if (role == SelectedRole)
     {
         m_directoryEntries[index.row()].selected = value.toBool();
@@ -96,22 +95,8 @@ bool PhotoDirModel::setData(const QModelIndex& index, const QVariant& value,
 
 void PhotoDirModel::emitCurrentSelection()
 {
-    constexpr auto new_dir_rel = "/selection/";
-    qDebug() << "ding current:" << m_currentDirectory;
-    QString current = [](QString& qs)
-    {
-        if (qs.left(5) == "file:")
-        {
-            return qs.mid(7);
-        }
-        else
-        {
-            return qs;
-        }
-    }(m_currentDirectory);
-
-    QDir workdir{current};
-    auto rv = workdir.mkdir("./selection");
+    QDir workdir{m_currentDirectory};
+    auto rv = workdir.mkdir(m_targetDirectory);
     qDebug() << "mkdir returned " << rv;
 
     for (const auto& elem : m_directoryEntries)
@@ -119,7 +104,7 @@ void PhotoDirModel::emitCurrentSelection()
         if (elem.selected)
         {
             QFile cf{elem.fileinfo.filePath()};
-            QString newPath = elem.fileinfo.dir().path() + new_dir_rel +
+            QString newPath = m_targetDirectory +
                               elem.fileinfo.fileName();
             qDebug() << "new path:" << newPath;
             auto cpRv = cf.copy(newPath);
@@ -130,38 +115,20 @@ void PhotoDirModel::emitCurrentSelection()
 
 void PhotoDirModel::populateDirectoryEntries()
 {
-    const std::set<QString> image_file_exts = {".jpeg", ".jpg"};
+    const std::set<QString> image_file_exts = {"jpeg", "jpg"};
     m_directoryEntries.clear();
 
-    qDebug() << "m_currentDirectory.toStdString():" << m_currentDirectory;
-
-    auto dir = [](QString& qs)
-    {
-        if (qs.left(5) == "file:")
-        {
-            return qs.mid(7);
-        }
-        else
-        {
-            return qs;
-        }
-    }(m_currentDirectory);
-
-    qDebug() << "path:" << dir;
-
-    auto dirIter = QDirIterator{dir};
+    auto dirIter = QDirIterator{m_currentDirectory};
 
     while (dirIter.hasNext())
     {
         QString filename = dirIter.next();
-        qDebug() << "next: " << filename;
         QFileInfo fileinfo{filename};
-        if (fileinfo.isFile())
+        if (fileinfo.isFile() and (image_file_exts.count(fileinfo.suffix()) > 0))
         {
             m_directoryEntries.push_back(fileinfo);
         }
     }
-    qDebug() << "m_directoryEntries.size():" << m_directoryEntries.size();
 }
 
 QString PhotoDirModel::getFilenameAt(size_type pos) const

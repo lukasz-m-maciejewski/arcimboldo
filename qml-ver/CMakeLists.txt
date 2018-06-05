@@ -11,11 +11,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Core Quick Widgets REQUIRED)
 
 list(APPEND ARCIMBOLDO_SOURCES
+    src/main.cpp
     src/PhotoDirModel.cpp
-    src/main.cpp)
+    src/AppState.cpp
+    src/DirectoryPathValidator.cpp
+    src/TargetDirectoryGenerator.cpp)
 
 list(APPEND ARCIMBOLDO_HEADERS
     src/PhotoDirModel.hpp
+    src/AppState.hpp
+    src/DirectoryPathValidator.hpp
+    src/TargetDirectoryGenerator.hpp
     )
 
 add_executable(${PROJECT_NAME}
