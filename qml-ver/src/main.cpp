@@ -13,7 +13,7 @@
 // DONE: export dir as global property
 // TODO: decent style for list items
 // TODO: highlight active item on the list
-// TODO: set initial active item when loading new directory
+// DONE: set initial active item when loading new directory
 // DONE: display current directory next to the button
 // TODO: handle drag'n'drop for photos
 // TODO: robust filtering of image/non-image files

@@ -106,14 +106,17 @@ ApplicationWindow {
                 targetDirectory: tdg.targetDirectory
             }
             delegate: ItemDelegate {
+                id: sidelistItemDelegate
                 width: parent.width * 0.9
+                property string image_url: "file:" + list_item_internal.photo_file_path
                 PhotoListItem {
+                    id: list_item_internal
                     anchors.fill: parent
                     photo_file_name: model.filename
                     photo_file_path: model.filepath
                     photo_selected: model.selected
                     onItemClicked: {
-                        mainImagePreview.source = "file:" + model.filepath
+                        sidelist.currentIndex = index
                     }
                     onItemMarkToggle: {
                         model.selected = !model.selected
@@ -127,6 +130,7 @@ ApplicationWindow {
 
         Image {
             id: mainImagePreview
+            source: sidelist.currentItem.image_url
             fillMode: Image.PreserveAspectFit
             anchors.top: parent.top
             anchors.bottom: parent.bottom
