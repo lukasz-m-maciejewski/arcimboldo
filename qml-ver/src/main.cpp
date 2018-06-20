@@ -17,8 +17,9 @@
 // DONE: display current directory next to the button
 // TODO: handle drag'n'drop for photos
 // TODO: robust filtering of image/non-image files
-// TODO: write customized folder selection dialog to work around the issues with
-// the current one
+// TODO: write customized folder selection dialog to work around the issues with the current one
+// TODO: save and restore last size and position in config
+// TODO: save and restore last open dir
 
 int main(int argc, char* argv[])
 {
